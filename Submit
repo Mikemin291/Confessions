@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Confessions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .character-count {
+            text-align: right;
+            color: #555;
+        }
+    </style>
+    <script>
+        async function handleSubmit(event) {
+            event.preventDefault();
+            const textarea = document.getElementById('confession');
+            const url = 'https://script.google.com/macros/s/AKfycbzvQwtPiwhym6OtXhvjk6cABNL5DZuIQ0Ma-mj9zQjrQqXBOqVi2VjZ5DW8GIG0cvbfNQ/exec';  // Replace with your Google Apps Script URL
+            
+            if (textarea.value.length > 200) {
+                alert('Confession exceeds 200 characters!');
+            } else {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `confession=${encodeURIComponent(textarea.value)}`
+                });
+                
+                const result = await response.json();
+                if (result.status === 'success') {
+                    alert('Confession submitted successfully!');
+                    textarea.value = '';
+                    updateCharacterCount();
+                } else {
+                    alert('Error submitting confession.');
+                }
+            }
+        }
+
+        function updateCharacterCount() {
+            const textarea = document.getElementById('confession');
+            const charCount = document.getElementById('char-count');
+            const maxLength = 200;
+            const currentLength = textarea.value.length;
+            charCount.textContent = `${currentLength}/${maxLength}`;
+        }
+    </script>
+</head>
+<body>
+
+    <h1>Anonymous Confessions</h1>
+    <form onsubmit="handleSubmit(event)">
+        <textarea id="confession" oninput="updateCharacterCount()" maxlength="200" placeholder="Enter your confession..."></textarea>
+        <div class="character-count" id="char-count">0/200</div>
+        <button type="submit">Submit</button>
+    </form>
+
+</body>
+</html>
